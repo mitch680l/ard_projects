@@ -23,11 +23,11 @@ struct ServoDevice {
   int targetDeg; //target angle
   int currentDeg; //current angle
 };
-
-const int rotPin = 10;
-const int vertPin = 9;
-ServoDevice rot = {Servo(), "Rotatal Servo", 180, 0, 10, 0, 90, 90};
-ServoDevice vert = {Servo(), "Vertical Servo", 180, 5, 10, 0, 90, 90};
+const int nudge = 3;
+const int panPin = 10;
+const int tiltPin = 9;
+ServoDevice pan = {Servo(), "Pan Servo", 180, 0, 10, 0, 90, 90};
+ServoDevice tilt = {Servo(), "Tilt Servo", 180, 5, 10, 0, 90, 90};
 
 //I2C communication
 DFRobot_DF2301Q_I2C asr;
@@ -35,8 +35,8 @@ DFRobot_DF2301Q_I2C asr;
 void setup() {
   Serial.begin(9600);
 
-  servo_init(&rot, rotPin);
-  servo_init(&vert, vertPin);
+  servo_init(&pan, panPin);
+  servo_init(&tilt, tiltPin);
   
   voice_init();
   
@@ -50,70 +50,70 @@ void loop() {
   //voice state
   switch (CMDID) {
     case 83: //Command Word: “Set servo to 10 degrees”
-      set_servo(&rot, 10);
+      set_servo(&pan, 10);
       Serial.println("received: " + CMDID); 
       break;
     
     case 87://Command Word: “Set servo to 90 degrees”
-      set_servo(&rot, 90);
+      set_servo(&pan, 90);
       Serial.println("received: " + CMDID);  
       break;
 
     case 5: //Command Word: "Right"
-      set_servo(&rot, rot.currentDeg + 45);
+      set_servo(&pan, pan.currentDeg + 45);
       Serial.println("received: " + CMDID); 
       break;
 
     case 6: //Command Word: "Hard Right"
-      set_servo(&rot, rot.currentDeg + 90);
+      set_servo(&pan, pan.currentDeg + 90);
       Serial.println("received: " + CMDID);  
       break;
 
     case 7: //Command Word: "Nudge Right"
-      set_servo(&rot, rot.currentDeg + 10);
+      set_servo(&pan, pan.currentDeg + nudge);
       Serial.println("received: " + CMDID); 
       break;
     case 8: //Command Word: "Left"
-      set_servo(&rot, rot.currentDeg - 45);
+      set_servo(&pan, pan.currentDeg - 45);
       Serial.println("received: " + CMDID); 
       break;
     case 9: //Command Word: "Hard Left"
-      set_servo(&rot, rot.currentDeg - 90);
+      set_servo(&pan, pan.currentDeg - 90);
       Serial.println("received: " + CMDID); 
       break;
     case 10: //Command Word: "Nudge Left"
-      set_servo(&rot, rot.currentDeg - 15);
+      set_servo(&pan, pan.currentDeg - nudge);
       Serial.println("received: " + CMDID); 
       break;
     case 11: //Command Word: "down"
-      set_servo(&vert, vert.currentDeg - 45);
+      set_servo(&tilt, tilt.currentDeg - 45);
       Serial.println("received: " + CMDID); 
       break;
     case 12: //Command Word: "nudge down"
-      set_servo(&vert, vert.currentDeg - 15);
+      set_servo(&tilt, tilt.currentDeg - nudge);
       Serial.println("received: " + CMDID); 
       break;
     case 13: //Command Word: "up"
-      set_servo(&vert, vert.currentDeg + 45);
+      set_servo(&tilt, tilt.currentDeg + 45);
       Serial.println("received: " + CMDID); 
       break;
     case 14: //Command Word: "nudge up"
-      set_servo(&vert, vert.currentDeg + 15);
+      set_servo(&tilt, tilt.currentDeg + nudge);
       Serial.println("received: " + CMDID); 
       break;
     case 15: //Command Word: "stop"
-      set_servo(&rot, rot.currentDeg);
-      set_servo(&vert, vert.currentDeg);
+      set_servo(&pan, pan.currentDeg);
+      set_servo(&tilt, tilt.currentDeg);
       Serial.println("received: " + CMDID); 
       break;
     case 16: //Command Word: "slow"
-      rot.operating_speed = rot.operating_speed * 2 + 1;
-      vert.operating_speed = vert.operating_speed * 2 + 1;
+      pan.operating_speed = pan.operating_speed * 4 + 1;
+      tilt.operating_speed = tilt.operating_speed * 4 + 1;
       Serial.println("received: " + CMDID);
       break;
     case 17: //Command Word: "fast"
-      rot.operating_speed /= 2;
-      vert.operating_speed /= 2;
+      pan.operating_speed /= 4;
+      tilt.operating_speed /= 4;
       Serial.println("received: " + CMDID);
       break;
     default:
@@ -123,8 +123,8 @@ void loop() {
       }
   }
 
-  move_servo(&rot);
-  move_servo(&vert);
+  move_servo(&pan);
+  move_servo(&tilt);
 }
 
 
