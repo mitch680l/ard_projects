@@ -1,0 +1,1 @@
+TFT 3.5" arduino shield frame for case click in. by OZ2CPU on Thingiverse: https://www.thingiverse.com/thing:3968741
